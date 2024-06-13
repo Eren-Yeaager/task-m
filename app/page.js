@@ -1,6 +1,7 @@
 "use client";
 import ToDo from "@/components/ToDo";
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 export default function Home() {
@@ -8,6 +9,36 @@ export default function Home() {
     title: "",
     description: "",
   });
+  const [todoData, setTodoData] = useState([]);
+  const fetchTodos = async () => {
+    const response = await axios("/api");
+    setTodoData(response.data.todos);
+  };
+  const deleteTodo = async (id) => {
+    const response = await axios.delete("/api", {
+      params: {
+        mongoId: id,
+      },
+    });
+    toast.success(response.data.msg);
+    await fetchTodos();
+  };
+  const completeTodo = async (id) => {
+    const response = await axios.put(
+      "/api",
+      {},
+      {
+        params: {
+          mongoId: id,
+        },
+      }
+    );
+    toast.success(response.data.msg);
+    await fetchTodos();
+  };
+  useEffect(() => {
+    fetchTodos();
+  }, []);
   const onChangeHandler = (e) => {
     const name = e.target.name;
     const value = e.target.value;
@@ -17,7 +48,13 @@ export default function Home() {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
-      toast.success("Task added");
+      const response = await axios.post("/api", formData);
+      toast.success(response.data.msg);
+      setFormData({
+        title: "",
+        description: "",
+      });
+      await fetchTodos();
     } catch {
       toast.error("Error");
     }
@@ -73,7 +110,20 @@ export default function Home() {
             </tr>
           </thead>
           <tbody>
-            <ToDo />
+            {todoData.map((item, index) => {
+              return (
+                <ToDo
+                  key={index}
+                  id={index}
+                  title={item.title}
+                  description={item.description}
+                  complete={item.isCompleted}
+                  mongoId={item._id}
+                  deleteTodo={deleteTodo}
+                  completeTodo={completeTodo}
+                />
+              );
+            })}
           </tbody>
         </table>
       </div>
