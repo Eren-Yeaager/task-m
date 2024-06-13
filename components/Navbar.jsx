@@ -1,5 +1,5 @@
-import React from "react";
 
+import React from "react";
 const Navbar = () => {
   return (
     <div className="flex py-3 flex-wrap justify-around">
