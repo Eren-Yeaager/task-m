@@ -21,14 +21,14 @@ export async function POST(request) {
     isCompleted: isCompleted || false,
   });
   return NextResponse.json({
-    msg: "To Do Created",
+    msg: "Task Created",
   });
 }
 export async function DELETE(request) {
   const mongoId = await request.nextUrl.searchParams.get("mongoId");
   await ToDoModel.findByIdAndDelete(mongoId);
   return NextResponse.json({
-    msg: "To Do Deleted",
+    msg: "Task Deleted",
   });
 }
 
@@ -40,6 +40,6 @@ export async function PUT(request) {
     },
   });
   return NextResponse.json({
-    msg: "To Do Updated",
+    msg: "Task Done",
   });
 }
